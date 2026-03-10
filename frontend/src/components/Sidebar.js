@@ -3,12 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { FaHome, FaExclamationCircle, FaProjectDiagram, FaMoneyBillWave, FaCalendarAlt, FaGift, FaBell, FaUser, FaSignOutAlt, FaBars, FaTimes, FaChevronDown, FaChevronRight, FaExclamationTriangle } from 'react-icons/fa';
 
-const Sidebar = () => {
+const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState(['overview', 'management', 'community', 'account']);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -21,12 +19,12 @@ const Sidebar = () => {
     };
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [showLogoutModal, isMobileOpen]);
+  }, [showLogoutModal, isMobileOpen, setIsMobileOpen]);
 
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileOpen(false);
-  }, [location.pathname]);
+  }, [location.pathname, setIsMobileOpen]);
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
@@ -49,8 +47,6 @@ const Sidebar = () => {
       prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]
     );
   };
-
-  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
   const menuSections = [
     {
@@ -113,21 +109,21 @@ const Sidebar = () => {
         }}
         className="fixed top-4 left-4 z-50 bg-blue-600 text-white p-3 rounded-lg shadow-lg hover:bg-blue-700 transition-all"
       >
-        {(isMobileOpen || !isCollapsed) ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
+        {(window.innerWidth < 1024 ? isMobileOpen : !isCollapsed) ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
       </button>
 
       {/* Sidebar */}
       <div className={`
         ${isCollapsed && !isMobileOpen ? 'lg:w-20' : 'lg:w-64'} 
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        w-64 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-white min-h-screen 
-        fixed left-0 top-0 shadow-2xl transition-all duration-300 z-40 overflow-y-auto
+        w-64 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-white h-screen 
+        fixed left-0 top-0 shadow-2xl transition-all duration-300 z-40 flex flex-col
       `}>
         
         {/* Logo */}
-        <div className={`p-6 border-b border-blue-700 mt-16 ${(isCollapsed && !isMobileOpen) ? 'text-center' : ''}`}>
+        <div className={`p-6 border-b border-blue-700 mt-16 ${(isCollapsed && !isMobileOpen) ? 'text-center px-2' : ''}`}>
           <Link to="/dashboard" className="flex items-center gap-3 hover:scale-105 transition-transform">
-            <span className="text-4xl">🌾</span>
+            <span className="text-4xl flex-shrink-0">🌾</span>
             {(!isCollapsed || isMobileOpen) && (
               <div>
                 <h1 className="text-2xl font-bold">GramSathi</h1>
@@ -157,7 +153,7 @@ const Sidebar = () => {
         )}
 
         {/* Menu Sections */}
-        <nav className="p-4 space-y-4">
+        <nav className="flex-1 p-4 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-blue-800">
           {menuSections.map((section) => {
             const visibleItems = section.items.filter(canAccessItem);
             if (visibleItems.length === 0) return null;
@@ -182,7 +178,7 @@ const Sidebar = () => {
                         <Link
                           key={item.path}
                           to={item.path}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                          className={`flex items-center ${(isCollapsed && !isMobileOpen) ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg transition-all duration-200 group ${
                             isActive(item.path)
                               ? 'bg-white text-blue-800 shadow-lg border-l-4 border-yellow-400'
                               : 'hover:bg-blue-700 hover:translate-x-1 hover:border-l-4 hover:border-blue-400'
@@ -218,10 +214,10 @@ const Sidebar = () => {
         </nav>
 
         {/* Logout Button */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-blue-700">
+        <div className="flex-shrink-0 p-4 border-t border-blue-700">
           <button
             onClick={handleLogoutClick}
-            className={`w-full flex items-center ${(isCollapsed && !isMobileOpen) ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-lg bg-red-500 hover:bg-red-600 transition-all duration-200 hover:shadow-lg`}
+            className={`w-full flex items-center ${(isCollapsed && !isMobileOpen) ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg bg-red-500 hover:bg-red-600 transition-all duration-200 hover:shadow-lg`}
             title={(isCollapsed && !isMobileOpen) ? 'Logout' : ''}
           >
             <FaSignOutAlt className="text-lg" />

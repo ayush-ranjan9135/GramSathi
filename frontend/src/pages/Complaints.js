@@ -10,7 +10,7 @@ const Complaints = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingComplaint, setEditingComplaint] = useState(null);
   const [formData, setFormData] = useState({
-    title: '', description: '', category: 'Water', priority: 'Medium', address: ''
+    title: '', description: '', category: 'Water', priority: 'Medium', address: '', photo: ''
   });
   const [photoPreview, setPhotoPreview] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,7 +36,7 @@ const Complaints = () => {
       await createComplaint(formData);
       toast.success('Complaint submitted successfully');
       setShowForm(false);
-      setFormData({ title: '', description: '', category: 'Water', priority: 'Medium', address: '' });
+      setFormData({ title: '', description: '', category: 'Water', priority: 'Medium', address: '', photo: '' });
       setPhotoPreview(null);
       loadComplaints();
     } catch (error) {
@@ -50,6 +50,7 @@ const Complaints = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreview(reader.result);
+        setFormData({ ...formData, photo: reader.result });
       };
       reader.readAsDataURL(file);
     }

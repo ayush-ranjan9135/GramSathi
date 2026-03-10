@@ -237,7 +237,7 @@ const Schemes = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
               <div>
-                <h4 className="font-bold text-primary mb-2">Eligibility Criteria</h4>
+                <h4 className="font-bold text-blue-600 mb-2">Eligibility Criteria</h4>
                 <ul className="space-y-1">
                   {scheme.eligibility.split('\n').map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm">
@@ -249,7 +249,7 @@ const Schemes = () => {
               </div>
 
               <div>
-                <h4 className="font-bold text-primary mb-2">Required Documents</h4>
+                <h4 className="font-bold text-blue-600 mb-2">Required Documents</h4>
                 <ul className="space-y-1">
                   {scheme.documents.split('\n').map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm">
@@ -261,7 +261,7 @@ const Schemes = () => {
               </div>
 
               <div>
-                <h4 className="font-bold text-primary mb-2">Benefits</h4>
+                <h4 className="font-bold text-blue-600 mb-2">Benefits</h4>
                 <ul className="space-y-1">
                   {scheme.benefits.split('\n').map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm">

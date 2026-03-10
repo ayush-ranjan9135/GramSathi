@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
@@ -23,6 +23,35 @@ const PrivateRoute = ({ children }) => {
   return user ? <>{children}</> : <Navigate to="/login" />;
 };
 
+const Layout = ({ children }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const handleSetIsCollapsed = useCallback((value) => {
+    setIsCollapsed(value);
+  }, []);
+
+  const handleSetIsMobileOpen = useCallback((value) => {
+    setIsMobileOpen(value);
+  }, []);
+
+  return (
+    <div className="flex">
+      <Sidebar 
+        isCollapsed={isCollapsed} 
+        setIsCollapsed={handleSetIsCollapsed}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={handleSetIsMobileOpen}
+      />
+      <div className={`flex-1 transition-all duration-300 ${
+        isCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+      } ml-0`}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const AppRoutes = () => {
   const { user } = useContext(AuthContext);
 
@@ -38,10 +67,7 @@ const AppRoutes = () => {
           path="/dashboard"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Dashboard />
-              </div>
+              <Layout><Dashboard /></Layout>
             </PrivateRoute>
           }
         />
@@ -49,10 +75,7 @@ const AppRoutes = () => {
           path="/complaints"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Complaints />
-              </div>
+              <Layout><Complaints /></Layout>
             </PrivateRoute>
           }
         />
@@ -60,10 +83,7 @@ const AppRoutes = () => {
           path="/projects"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Projects />
-              </div>
+              <Layout><Projects /></Layout>
             </PrivateRoute>
           }
         />
@@ -71,10 +91,7 @@ const AppRoutes = () => {
           path="/funds"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Funds />
-              </div>
+              <Layout><Funds /></Layout>
             </PrivateRoute>
           }
         />
@@ -82,10 +99,7 @@ const AppRoutes = () => {
           path="/events"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Events />
-              </div>
+              <Layout><Events /></Layout>
             </PrivateRoute>
           }
         />
@@ -93,10 +107,7 @@ const AppRoutes = () => {
           path="/schemes"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Schemes />
-              </div>
+              <Layout><Schemes /></Layout>
             </PrivateRoute>
           }
         />
@@ -104,10 +115,7 @@ const AppRoutes = () => {
           path="/notifications"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Notifications />
-              </div>
+              <Layout><Notifications /></Layout>
             </PrivateRoute>
           }
         />
@@ -115,10 +123,7 @@ const AppRoutes = () => {
           path="/profile"
           element={
             <PrivateRoute>
-              <Sidebar />
-              <div className="lg:ml-64 ml-0">
-                <Profile />
-              </div>
+              <Layout><Profile /></Layout>
             </PrivateRoute>
           }
         />
