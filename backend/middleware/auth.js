@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const cacheService = require('../services/cacheService');
 
 exports.protect = async (req, res, next) => {
   try {
@@ -13,7 +14,24 @@ exports.protect = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select('-password');
+    
+    // Try to get user from cache first
+    let user = await cacheService.getCachedUser(decoded.id);
+    
+    if (!user) {
+      // If not in cache, fetch from DB and cache it
+      user = await User.findById(decoded.id).select('-password');
+      if (user) {
+        await cacheService.cacheUser(decoded.id, {
+          id: user._id,
+          name: user.name,
+          role: user.role,
+          phone: user.phone
+        });
+      }
+    }
+    
+    req.user = user;
     next();
   } catch (error) {
     res.status(401).json({ message: 'Not authorized' });

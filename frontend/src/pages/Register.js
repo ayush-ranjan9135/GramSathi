@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register, verifyOTP } from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { FaUser, FaPhone, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaMapMarkerAlt, FaCheck } from 'react-icons/fa';
 
@@ -14,6 +15,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const { loginUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const getPasswordStrength = (password) => {
@@ -48,9 +50,17 @@ const Register = () => {
     setLoading(true);
     try {
       const { data } = await register(formData);
-      setUserId(data.userId);
       setStep(2);
-      toast.success('OTP sent to your phone and email');
+      
+      if (data.devMode && data.otp) {
+        toast.info(`🔑 Your OTP: ${data.otp}`, { 
+          autoClose: 15000,
+          position: 'top-center',
+          style: { fontSize: '18px', fontWeight: 'bold' }
+        });
+      } else {
+        toast.success('OTP sent to your email address');
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Registration failed');
     } finally {
@@ -62,9 +72,16 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await verifyOTP({ userId, otp });
-      toast.success('Account verified! Please login');
-      navigate('/login');
+      const { data } = await verifyOTP({ email: formData.email, otp });
+      toast.success('Account created successfully!');
+      
+      // Auto login after registration
+      if (data.token && data.user) {
+        loginUser(data.token, data.user);
+        navigate('/dashboard');
+      } else {
+        navigate('/login');
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Verification failed');
     } finally {
@@ -159,33 +176,32 @@ const Register = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                      <div className="relative">
-                        <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input
-                          type="tel"
-                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="Phone"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          required
-                        />
-                      </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <div className="relative">
+                      <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="email"
+                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Enter your email address"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                      <div className="relative">
-                        <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input
-                          type="email"
-                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="Email"
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        />
-                      </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                    <div className="relative">
+                      <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="tel"
+                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Enter phone number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      />
                     </div>
                   </div>
 
@@ -299,7 +315,7 @@ const Register = () => {
                     <FaCheck className="text-3xl text-green-600" />
                   </div>
                   <h2 className="text-2xl font-bold text-gray-800 mb-2">Verify OTP</h2>
-                  <p className="text-gray-600">Enter the code sent to your phone and email</p>
+                  <p className="text-gray-600">Enter the 6-digit code sent to your email</p>
                 </div>
 
                 <form onSubmit={handleVerify} className="space-y-6">

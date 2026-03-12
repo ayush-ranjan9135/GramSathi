@@ -1,5 +1,6 @@
 const Complaint = require('../models/Complaint');
 const Notification = require('../models/Notification');
+const cacheService = require('../services/cacheService');
 
 exports.createComplaint = async (req, res) => {
   try {
@@ -8,7 +9,11 @@ exports.createComplaint = async (req, res) => {
       userId: req.user.id
     });
     
-    // Try to create notification, but don't fail if it errors
+    // Clear related cache
+    await cacheService.clearPattern('stats');
+    await cacheService.clearPattern('complaints');
+    await cacheService.clearPattern('dashboard');
+    
     try {
       await Notification.create({
         title: 'New Complaint',
@@ -58,6 +63,12 @@ exports.updateComplaint = async (req, res) => {
       { ...req.body, updatedAt: Date.now() },
       { new: true }
     );
+    
+    // Clear related cache
+    await cacheService.clearPattern('stats');
+    await cacheService.clearPattern('complaints');
+    await cacheService.clearPattern('dashboard');
+    
     res.json(complaint);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -88,6 +99,15 @@ exports.assignComplaint = async (req, res) => {
 
 exports.getComplaintStats = async (req, res) => {
   try {
+    const cacheKey = cacheService.keys.complaintStats();
+    
+    // Try to get from cache first
+    let cachedStats = await cacheService.get(cacheKey);
+    if (cachedStats) {
+      return res.json(cachedStats);
+    }
+    
+    // If not in cache, fetch from database
     const stats = await Complaint.aggregate([
       {
         $group: {
@@ -106,7 +126,12 @@ exports.getComplaintStats = async (req, res) => {
       }
     ]);
 
-    res.json({ categoryStats: stats, statusStats });
+    const result = { categoryStats: stats, statusStats };
+    
+    // Cache the result for 5 minutes
+    await cacheService.set(cacheKey, result, 300);
+    
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

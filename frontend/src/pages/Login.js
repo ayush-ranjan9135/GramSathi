@@ -3,10 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
-import { FaPhone, FaLock, FaEye, FaEyeSlash, FaArrowRight } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaArrowRight } from 'react-icons/fa';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ phone: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { loginUser } = useContext(AuthContext);
@@ -102,21 +102,21 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Phone Input */}
+              {/* Email/Phone Input */}
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
+                  Email or Phone Number
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <FaPhone className="text-gray-400" />
+                    <FaEnvelope className="text-gray-400" />
                   </div>
                   <input
-                    type="tel"
+                    type="text"
                     className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Enter your phone number"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="Enter your email or phone number"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     onKeyPress={handleKeyPress}
                     required
                   />

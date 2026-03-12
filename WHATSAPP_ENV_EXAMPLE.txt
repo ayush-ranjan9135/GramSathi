@@ -1,0 +1,6 @@
+# Add these to your backend/.env file
+
+# WhatsApp Cloud API Configuration
+WHATSAPP_TOKEN=EAAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PHONE_NUMBER_ID=1234567890123456
+VERIFY_TOKEN=gramsathi_webhook_123

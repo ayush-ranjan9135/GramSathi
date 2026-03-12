@@ -82,6 +82,7 @@ A comprehensive digital platform that bridges the gap between village administra
 - **Express.js** - Web Framework
 - **MongoDB** - Database
 - **Mongoose** - ODM
+- **Upstash Redis** - Caching & Session Management
 - **JWT** - Authentication
 - **Bcrypt** - Password Hashing
 - **Nodemailer** - Email Service
@@ -306,15 +307,13 @@ npm run build
 4. **Push** to branch (`git push origin feature/AmazingFeature`)
 5. **Open** Pull Request
 
-## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Team
 
-- **Developer**: [Your Name](https://github.com/yourusername)
-- **Email**: your.email@example.com
-- **LinkedIn**: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- **Developer**: [Ayush Ranjan](https://github.com/yourusername)
+- **Email**: Ayushranjan9531@gmail.com
+- **LinkedIn**: https://www.linkedin.com/in/ayush-ranjan-9135d3/
+- **Github**:https://github.com/ayush-ranjan9135
 
 ## 🙏 Acknowledgments
 
