@@ -49,7 +49,7 @@ app.get('/api/health-check', (req, res) => {
     EMAIL_USER: !!process.env.EMAIL_USER,
     EMAIL_PASS: !!process.env.EMAIL_PASS,
     EMAIL_HOST: !!process.env.EMAIL_HOST,
-    EMAIL_PORT: !!process.env.EMAIL_PORT,
+    EMAIL_PORT: process.env.EMAIL_PORT || 'Not Set',
     REDIS_URL: !!process.env.UPSTASH_REDIS_REST_URL,
     REDIS_TOKEN: !!process.env.UPSTASH_REDIS_REST_TOKEN,
     MONGODB: !!process.env.MONGODB_URI,
