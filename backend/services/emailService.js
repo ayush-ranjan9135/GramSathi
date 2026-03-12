@@ -12,17 +12,21 @@ const sendEmailOTP = async (email, otp) => {
       return { success: false, error: 'Email not configured' };
     }
 
+    const port = parseInt(process.env.EMAIL_PORT) || 587;
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT),
-      secure: false,
+      port: port,
+      secure: port === 465, // true for port 465, false for other ports
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
       },
       tls: {
         rejectUnauthorized: false
-      }
+      },
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
 
     // Verify connection
