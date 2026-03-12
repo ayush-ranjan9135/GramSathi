@@ -65,6 +65,22 @@ app.get('/api/health-check', (req, res) => {
   });
 });
 
+// Diagnostic route to test email sending
+app.get('/api/test-email', async (req, res) => {
+  const testEmail = req.query.email || process.env.EMAIL_USER;
+  try {
+    const { sendEmailOTP } = require('./services/emailService');
+    const result = await sendEmailOTP(testEmail, '123456');
+    if (result.success) {
+      res.json({ message: `Test email sent successfully to ${testEmail}` });
+    } else {
+      res.status(500).json({ message: 'Failed to send test email', error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during email test', error: error.message });
+  }
+});
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/complaints', require('./routes/complaintRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
