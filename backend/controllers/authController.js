@@ -191,34 +191,43 @@ exports.login = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    console.log(`\n🔍 Forgot Password request received for: ${email}`);
     
     // Rate limiting
     const canProceed = await cacheService.checkRateLimit(`forgot:${email}`, 3, 300);
     if (!canProceed) {
+      console.log(`⚠️ Rate limit hit for ${email}`);
       return res.status(429).json({ message: 'Too many attempts. Try again later.' });
     }
     
     const user = await User.findOne({ email });
 
     if (!user) {
+      console.log(`❌ User NOT found in database: ${email}`);
       return res.status(404).json({ message: 'User not found' });
     }
+
+    console.log(`✅ User found: ${user._id}`);
 
     const otp = emailService.generateOTP();
     
     // Store OTP in Redis
-    await cacheService.setOTP(email, otp, 300);
+    console.log(`📦 Storing OTP in Redis...`);
+    const redisResult = await cacheService.setOTP(email, otp, 300);
+    console.log(`📦 Redis storage status: ${redisResult ? 'Success' : 'FAILURE'}`);
 
     // Send OTP via Email
+    console.log(`📧 Attempting to send OTP email to ${email}...`);
     const emailResult = await emailService.sendEmailOTP(email, otp);
     
     if (emailResult.success) {
-      console.log(`✅ Password reset OTP sent to ${email}`);
+      console.log(`✅ Password reset OTP sent successfully to ${email}`);
       res.json({ message: 'OTP sent to your email', userId: user._id });
     } else {
+      console.log(`❌ EMAIL SENDING FAILED: ${emailResult.error}`);
       // For development: Log OTP to console if email fails
       console.log('\n🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴');
-      console.log('⚠️  EMAIL SERVICE NOT CONFIGURED - PASSWORD RESET');
+      console.log('⚠️  EMAIL SERVICE NOT CONFIGURED OR FAILED - PASSWORD RESET');
       console.log('📧 Email:', email);
       console.log('🔑 OTP:', otp);
       console.log('👤 User ID:', user._id);
