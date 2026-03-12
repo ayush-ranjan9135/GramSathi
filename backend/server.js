@@ -8,17 +8,22 @@ const app = express();
 // Connect Database
 connectDB();
 
-// Middleware - Allow all origins in development
+// Middleware - CORS for both dev and production
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  process.env.CLIENT_URL,          // Vercel production URL (set in .env / Render env)
+].filter(Boolean);                  // remove undefined if CLIENT_URL not set
+
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
-    const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
-    if (allowedOrigins.indexOf(origin) !== -1) {
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, true); // Allow all in development
+      callback(new Error(`CORS: origin ${origin} not allowed`));
     }
   },
   credentials: true,
