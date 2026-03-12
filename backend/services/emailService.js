@@ -1,4 +1,4 @@
-import { TransactionalEmailsApi, SendSmtpEmail } from '@getbrevo/brevo';
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -13,11 +13,11 @@ const sendEmailOTP = async (email, otp) => {
       return { success: false, error: 'Brevo API key not configured' };
     }
 
-    let apiInstance = new TransactionalEmailsApi();
+    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     let apiKeyAuth = apiInstance.authentications['apiKey'];
     apiKeyAuth.apiKey = apiKey;
 
-    let sendSmtpEmail = new SendSmtpEmail();
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
     sendSmtpEmail.subject = "🔐 Your GramSathi Verification Code";
     sendSmtpEmail.htmlContent = `
@@ -106,5 +106,6 @@ const sendEmailOTP = async (email, otp) => {
   }
 };
 
-export default { generateOTP, sendEmailOTP };
+module.exports = { generateOTP, sendEmailOTP };
+
 
