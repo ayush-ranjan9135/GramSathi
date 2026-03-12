@@ -49,10 +49,8 @@ app.use((req, res, next) => {
 // Health check route for production diagnosis
 app.get('/api/health-check', (req, res) => {
   const envStatus = {
+    BREVO_API_KEY: !!process.env.BREVO_API_KEY,
     EMAIL_USER: !!process.env.EMAIL_USER,
-    EMAIL_PASS: !!process.env.EMAIL_PASS,
-    EMAIL_HOST: !!process.env.EMAIL_HOST,
-    EMAIL_PORT: process.env.EMAIL_PORT || 'Not Set',
     REDIS_URL: !!process.env.UPSTASH_REDIS_REST_URL,
     REDIS_TOKEN: !!process.env.UPSTASH_REDIS_REST_TOKEN,
     MONGODB: !!process.env.MONGODB_URI,
@@ -60,28 +58,29 @@ app.get('/api/health-check', (req, res) => {
   };
   res.json({
     status: 'GramSathi API is running',
+    emailService: 'Brevo API',
     environmentVariables: envStatus,
     timestamp: new Date().toISOString()
   });
 });
 
-// Diagnostic route to test email sending
+// Diagnostic route to test Brevo email sending
 app.get('/api/test-email', async (req, res) => {
   const testEmail = req.query.email || process.env.EMAIL_USER;
   try {
     const { sendEmailOTP } = require('./services/emailService');
     const result = await sendEmailOTP(testEmail, '123456');
     if (result.success) {
-      res.json({ message: `Test email sent successfully to ${testEmail}` });
+      res.json({ message: `Brevo test email queued successfully to ${testEmail}` });
     } else {
       res.status(500).json({ 
-        message: 'Failed to send test email', 
+        message: 'Brevo API failure', 
         error: result.error,
-        tip: 'Check Render logs for full SMTP debug output'
+        tip: 'Check Render logs and verify BREVO_API_KEY'
       });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Server error during email test', error: error.message });
+    res.status(500).json({ message: 'Server error during Brevo test', error: error.message });
   }
 });
 
