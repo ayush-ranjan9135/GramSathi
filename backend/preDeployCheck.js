@@ -7,10 +7,10 @@
  *  Usage:  node preDeployCheck.js
  */
 
-require('dotenv').config();
-const mongoose = require('mongoose');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
 
 /* ─────────────── helpers ─────────────── */
 const PASS = (msg) => console.log(`  ✅  ${msg}`);
@@ -97,18 +97,18 @@ async function checkMongoDB() {
 
     // Check all models can be loaded
     const models = [
-      './models/User',
-      './models/Complaint',
-      './models/Event',
-      './models/Fund',
-      './models/Notification',
-      './models/Project',
-      './models/WelfareScheme',
+      './models/User.js',
+      './models/Complaint.js',
+      './models/Event.js',
+      './models/Fund.js',
+      './models/Notification.js',
+      './models/Project.js',
+      './models/WelfareScheme.js',
     ];
     for (const m of models) {
       try {
-        require(m);
-        pass(`Model loaded: ${m.replace('./models/', '')}`);
+        await import(m);
+        pass(`Model loaded: ${m.replace('./models/', '').replace('.js', '')}`);
       } catch (e) {
         fail(`Model failed to load: ${m} — ${e.message}`);
       }
@@ -126,7 +126,7 @@ async function checkMongoDB() {
 async function checkRedis() {
   SECTION('Upstash Redis Connection');
   try {
-    const { Redis } = require('@upstash/redis');
+    const { Redis } = await import('@upstash/redis');
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
@@ -197,7 +197,7 @@ function checkJWT() {
 /* ═══════════════════════════════════════════════════════════
    6. ROUTE & CONTROLLER FILE INTEGRITY
 ═══════════════════════════════════════════════════════════ */
-function checkRoutes() {
+async function checkRoutes() {
   SECTION('Routes & Controllers File Integrity');
 
   // NOTE: server.js is intentionally excluded — requiring it starts Express
@@ -225,7 +225,7 @@ function checkRoutes() {
 
   for (const f of files) {
     try {
-      require(f);
+      await import(f);
       pass(`Loaded OK: ${f}`);
     } catch (e) {
       fail(`Syntax/import error in ${f}: ${e.message}`);
@@ -258,7 +258,7 @@ function checkPort() {
 /* ═══════════════════════════════════════════════════════════
    8. NODE / PACKAGE SANITY
 ═══════════════════════════════════════════════════════════ */
-function checkNode() {
+async function checkNode() {
   SECTION('Node.js & Packages');
   const [major] = process.version.replace('v', '').split('.').map(Number);
   if (major >= 16) {
@@ -274,7 +274,7 @@ function checkNode() {
   ];
   for (const dep of deps) {
     try {
-      require(dep);
+      await import(dep);
       pass(`Package present: ${dep}`);
     } catch {
       fail(`Package missing: ${dep} — run npm install`);
@@ -314,9 +314,9 @@ function printSummary() {
   console.log('  Checking all systems before deployment...');
 
   checkEnvVars();
-  checkNode();
+  await checkNode();
   checkJWT();
-  checkRoutes();
+  await checkRoutes();
   checkPort();
 
   // async checks

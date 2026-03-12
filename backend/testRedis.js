@@ -1,5 +1,5 @@
-require('dotenv').config();
-const cacheService = require('./services/cacheService');
+import 'dotenv/config';
+import cacheService from './services/cacheService.js';
 
 async function testRedis() {
   console.log('🧪 Testing Upstash Redis Connection...\n');

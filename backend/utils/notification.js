@@ -1,36 +1,45 @@
-const nodemailer = require('nodemailer');
+import { BrevoClient } from '@getbrevo/brevo';
+import twilio from 'twilio';
 
 let twilioClient = null;
 if (process.env.TWILIO_ACCOUNT_SID && 
     process.env.TWILIO_AUTH_TOKEN && 
     process.env.TWILIO_ACCOUNT_SID.startsWith('AC')) {
-  const twilio = require('twilio');
   twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
-exports.generateOTP = () => {
+export const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-exports.sendEmailOTP = async (email, otp) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: 'GramSathi - OTP Verification',
-    html: `<p>Your OTP is: <strong>${otp}</strong></p><p>Valid for 10 minutes.</p>`
-  });
+export const sendEmailOTP = async (email, otp) => {
+  try {
+    const apiKey = process.env.BREVO_API_KEY;
+    
+    if (!apiKey || apiKey.trim() === '') {
+      console.log('⚠️  BREVO_API_KEY not configured');
+      return { success: false, error: 'Brevo API key not configured' };
+    }
+
+    const client = new BrevoClient({ apiKey });
+    const senderEmail = process.env.EMAIL_USER || process.env.BREVO_SENDER_EMAIL || 'no-reply@gramsathi.in';
+
+    const emailData = {
+      sender: { name: 'GramSathi', email: senderEmail },
+      to: [{ email }],
+      subject: 'GramSathi - OTP Verification',
+      htmlContent: `<p>Your OTP is: <strong>${otp}</strong></p><p>Valid for 10 minutes.</p>`
+    };
+
+    await client.transactionalEmails.sendTransacEmail(emailData);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Brevo Email error:', error.message || error);
+    return { success: false, error: error.message || 'API Error' };
+  }
 };
 
-exports.sendSMSOTP = async (phone, otp) => {
+export const sendSMSOTP = async (phone, otp) => {
   if (!twilioClient) {
     console.log(`SMS OTP (${otp}) would be sent to ${phone} - Twilio not configured`);
     return;
@@ -42,11 +51,29 @@ exports.sendSMSOTP = async (phone, otp) => {
   });
 };
 
-exports.sendEmail = async (to, subject, html) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    html
-  });
+export const sendEmail = async (to, subject, html) => {
+  try {
+    const apiKey = process.env.BREVO_API_KEY;
+    
+    if (!apiKey || apiKey.trim() === '') {
+      console.log('⚠️  BREVO_API_KEY not configured');
+      return { success: false, error: 'Brevo API key not configured' };
+    }
+
+    const client = new BrevoClient({ apiKey });
+    const senderEmail = process.env.EMAIL_USER || process.env.BREVO_SENDER_EMAIL || 'no-reply@gramsathi.in';
+
+    const emailData = {
+      sender: { name: 'GramSathi', email: senderEmail },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html
+    };
+
+    await client.transactionalEmails.sendTransacEmail(emailData);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Brevo Email error:', error.message || error);
+    return { success: false, error: error.message || 'API Error' };
+  }
 };

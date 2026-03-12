@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import { createFund, getFunds, getFundStats } from '../controllers/fundController.js';
+import { protect, authorize } from '../middleware/auth.js';
+
 const router = express.Router();
-const { createFund, getFunds, getFundStats } = require('../controllers/fundController');
-const { protect, authorize } = require('../middleware/auth');
 
 router.post('/', protect, authorize('admin', 'superadmin'), createFund);
 router.get('/', getFunds);
 router.get('/stats', getFundStats);
 
-module.exports = router;
+export default router;

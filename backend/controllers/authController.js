@@ -1,13 +1,13 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const emailService = require('../services/emailService');
-const cacheService = require('../services/cacheService');
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import emailService from '../services/emailService.js';
+import cacheService from '../services/cacheService.js';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 };
 
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { name, email, phone, password, role, village, address } = req.body;
     
@@ -60,7 +60,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.verifyOTP = async (req, res) => {
+export const verifyOTP = async (req, res) => {
   try {
     console.log('\n📥 Verify OTP Request Body:', JSON.stringify(req.body, null, 2));
     
@@ -128,7 +128,7 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, phone, password } = req.body;
     
@@ -188,7 +188,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     console.log(`\n🔍 Forgot Password request received for: ${email}`);
@@ -247,7 +247,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-exports.resetPassword = async (req, res) => {
+export const resetPassword = async (req, res) => {
   try {
     const { userId, otp, newPassword } = req.body;
     const user = await User.findById(userId);
@@ -274,7 +274,7 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-exports.getProfile = async (req, res) => {
+export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
@@ -283,7 +283,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-exports.updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
   try {
     const { name, email, village, address, profilePic } = req.body;
     const user = await User.findByIdAndUpdate(

@@ -1,8 +1,8 @@
-const Fund = require('../models/Fund');
-const Project = require('../models/Project');
-const cacheService = require('../services/cacheService');
+import Fund from '../models/Fund.js';
+import Project from '../models/Project.js';
+import cacheService from '../services/cacheService.js';
 
-exports.createFund = async (req, res) => {
+export const createFund = async (req, res) => {
   try {
     const fund = await Fund.create({
       ...req.body,
@@ -19,7 +19,7 @@ exports.createFund = async (req, res) => {
   }
 };
 
-exports.getFunds = async (req, res) => {
+export const getFunds = async (req, res) => {
   try {
     const funds = await Fund.find().sort('-date');
     res.json(funds);
@@ -28,7 +28,7 @@ exports.getFunds = async (req, res) => {
   }
 };
 
-exports.getFundStats = async (req, res) => {
+export const getFundStats = async (req, res) => {
   try {
     const cacheKey = cacheService.keys.fundStats();
     

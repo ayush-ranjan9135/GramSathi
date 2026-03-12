@@ -1,4 +1,4 @@
-const { Redis } = require('@upstash/redis');
+import { Redis } from '@upstash/redis';
 
 class CacheService {
   constructor() {
@@ -118,4 +118,4 @@ class CacheService {
   };
 }
 
-module.exports = new CacheService();
+export default new CacheService();

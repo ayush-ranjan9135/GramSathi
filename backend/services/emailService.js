@@ -1,4 +1,4 @@
-const SibApiV3Sdk = require('@getbrevo/brevo');
+import { BrevoClient } from '@getbrevo/brevo';
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -13,14 +13,18 @@ const sendEmailOTP = async (email, otp) => {
       return { success: false, error: 'Brevo API key not configured' };
     }
 
-    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    let apiKeyAuth = apiInstance.authentications['apiKey'];
-    apiKeyAuth.apiKey = apiKey;
+    const client = new BrevoClient({ apiKey });
+    
+    const senderEmail = process.env.EMAIL_USER || process.env.BREVO_SENDER_EMAIL || 'no-reply@gramsathi.in';
 
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-
-    sendSmtpEmail.subject = "🔐 Your GramSathi Verification Code";
-    sendSmtpEmail.htmlContent = `
+    const emailData = {
+      sender: { 
+        name: 'GramSathi',
+        email: senderEmail
+      },
+      to: [{ email }],
+      subject: '🔐 Your GramSathi Verification Code',
+      htmlContent: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,9 +36,7 @@ const sendEmailOTP = async (email, otp) => {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0fdf4;padding:40px 0;">
     <tr>
       <td align="center">
-        <!-- Card -->
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(16,185,129,0.12);">
-          <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#059669 0%,#10b981 60%,#34d399 100%);padding:36px 40px;text-align:center;">
               <table cellpadding="0" cellspacing="0" width="100%">
@@ -50,14 +52,12 @@ const sendEmailOTP = async (email, otp) => {
               </table>
             </td>
           </tr>
-          <!-- Body -->
           <tr>
             <td style="padding:40px 48px 32px;">
               <h2 style="margin:0 0 8px;font-size:22px;color:#111827;font-weight:700;">Verify Your Identity</h2>
               <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.6;">
                 We received a request to access your GramSathi account. Use the one-time password (OTP) below to complete your verification.
               </p>
-              <!-- OTP Box -->
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding:8px 0 28px;">
@@ -68,7 +68,6 @@ const sendEmailOTP = async (email, otp) => {
                   </td>
                 </tr>
               </table>
-              <!-- Timer notice -->
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
                 <tr>
                   <td style="background:#fefce8;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:12px 16px;">
@@ -80,7 +79,6 @@ const sendEmailOTP = async (email, otp) => {
               </table>
             </td>
           </tr>
-          <!-- Footer -->
           <tr>
             <td style="padding:24px 48px 36px;text-align:center;border-top:1px solid #e5e7eb;">
               <p style="margin:0 0 4px;font-size:12px;color:#9ca3af;">© ${new Date().getFullYear()} GramSathi. All rights reserved.</p>
@@ -93,19 +91,19 @@ const sendEmailOTP = async (email, otp) => {
   </table>
 </body>
 </html>
-    `;
-    sendSmtpEmail.sender = { "name": "GramSathi", "email": process.env.EMAIL_USER || "no-reply@gramsathi.in" };
-    sendSmtpEmail.to = [{ "email": email }];
+      `
+    };
 
-    const data = await apiInstance.sendTransactedEmail(sendSmtpEmail);
-    console.log('✅ Brevo Email sent:', data.messageId);
-    return { success: true };
+    const response = await client.transactionalEmails.sendTransacEmail(emailData);
+    console.log('✅ Brevo Email sent:', response.messageId);
+    return { success: true, messageId: response.messageId };
   } catch (error) {
     console.error('❌ Brevo Email error:', error.message || error);
     return { success: false, error: error.message || 'API Error' };
   }
 };
 
-module.exports = { generateOTP, sendEmailOTP };
+export { generateOTP, sendEmailOTP };
+export default { generateOTP, sendEmailOTP };
 
 

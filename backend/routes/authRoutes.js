@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import { register, verifyOTP, login, forgotPassword, resetPassword, getProfile, updateProfile } from '../controllers/authController.js';
+import whatsappService from '../services/whatsappService.js';
+import { protect } from '../middleware/auth.js';
+
 const router = express.Router();
-const { register, verifyOTP, login, forgotPassword, resetPassword, getProfile, updateProfile } = require('../controllers/authController');
-const whatsappService = require('../services/whatsappService');
-const { protect } = require('../middleware/auth');
 
 router.post('/register', register);
 router.post('/verify-otp', verifyOTP);
@@ -31,4 +32,4 @@ router.post('/webhook', (req, res) => {
   res.sendStatus(200);
 });
 
-module.exports = router;
+export default router;

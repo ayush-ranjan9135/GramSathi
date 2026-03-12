@@ -1,8 +1,8 @@
-const Complaint = require('../models/Complaint');
-const Notification = require('../models/Notification');
-const cacheService = require('../services/cacheService');
+import Complaint from '../models/Complaint.js';
+import Notification from '../models/Notification.js';
+import cacheService from '../services/cacheService.js';
 
-exports.createComplaint = async (req, res) => {
+export const createComplaint = async (req, res) => {
   try {
     const complaint = await Complaint.create({
       ...req.body,
@@ -32,7 +32,7 @@ exports.createComplaint = async (req, res) => {
   }
 };
 
-exports.getComplaints = async (req, res) => {
+export const getComplaints = async (req, res) => {
   try {
     const filter = req.user.role === 'villager' ? { userId: req.user.id } : {};
     const complaints = await Complaint.find(filter)
@@ -45,7 +45,7 @@ exports.getComplaints = async (req, res) => {
   }
 };
 
-exports.getComplaint = async (req, res) => {
+export const getComplaint = async (req, res) => {
   try {
     const complaint = await Complaint.findById(req.params.id)
       .populate('userId', 'name phone')
@@ -56,7 +56,7 @@ exports.getComplaint = async (req, res) => {
   }
 };
 
-exports.updateComplaint = async (req, res) => {
+export const updateComplaint = async (req, res) => {
   try {
     const complaint = await Complaint.findByIdAndUpdate(
       req.params.id,
@@ -75,7 +75,7 @@ exports.updateComplaint = async (req, res) => {
   }
 };
 
-exports.assignComplaint = async (req, res) => {
+export const assignComplaint = async (req, res) => {
   try {
     const { workerId } = req.body;
     const complaint = await Complaint.findByIdAndUpdate(
@@ -97,7 +97,7 @@ exports.assignComplaint = async (req, res) => {
   }
 };
 
-exports.getComplaintStats = async (req, res) => {
+export const getComplaintStats = async (req, res) => {
   try {
     const cacheKey = cacheService.keys.complaintStats();
     

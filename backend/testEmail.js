@@ -1,5 +1,5 @@
-require('dotenv').config();
-const nodemailer = require('nodemailer');
+import 'dotenv/config';
+import nodemailer from 'nodemailer';
 
 console.log('\n🔍 EMAIL CONFIGURATION DEBUG\n');
 console.log('EMAIL_HOST:', process.env.EMAIL_HOST);

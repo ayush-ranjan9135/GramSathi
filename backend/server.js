@@ -1,7 +1,15 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import complaintRoutes from './routes/complaintRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+import fundRoutes from './routes/fundRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
+import schemeRoutes from './routes/schemeRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import { sendEmailOTP } from './services/emailService.js';
 
 const app = express();
 
@@ -68,7 +76,6 @@ app.get('/api/health-check', (req, res) => {
 app.get('/api/test-email', async (req, res) => {
   const testEmail = req.query.email || process.env.EMAIL_USER;
   try {
-    const { sendEmailOTP } = require('./services/emailService');
     const result = await sendEmailOTP(testEmail, '123456');
     if (result.success) {
       res.json({ message: `Brevo test email queued successfully to ${testEmail}` });
@@ -84,13 +91,13 @@ app.get('/api/test-email', async (req, res) => {
   }
 });
 
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/complaints', require('./routes/complaintRoutes'));
-app.use('/api/projects', require('./routes/projectRoutes'));
-app.use('/api/funds', require('./routes/fundRoutes'));
-app.use('/api/events', require('./routes/eventRoutes'));
-app.use('/api/schemes', require('./routes/schemeRoutes'));
-app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/auth', authRoutes);
+app.use('/api/complaints', complaintRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/funds', fundRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/schemes', schemeRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'GramSathi API' });

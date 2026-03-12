@@ -1,6 +1,6 @@
-const cacheService = require('../services/cacheService');
+import cacheService from '../services/cacheService.js';
 
-exports.rateLimiter = (limit = 100, window = 60) => {
+export const rateLimiter = (limit = 100, window = 60) => {
   return async (req, res, next) => {
     const identifier = req.ip || req.connection.remoteAddress;
     const key = `api:${req.path}:${identifier}`;

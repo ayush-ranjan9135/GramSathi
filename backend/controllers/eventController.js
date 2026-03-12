@@ -1,8 +1,8 @@
-const Event = require('../models/Event');
-const Notification = require('../models/Notification');
-const cacheService = require('../services/cacheService');
+import Event from '../models/Event.js';
+import Notification from '../models/Notification.js';
+import cacheService from '../services/cacheService.js';
 
-exports.createEvent = async (req, res) => {
+export const createEvent = async (req, res) => {
   try {
     const event = await Event.create({
       ...req.body,
@@ -31,7 +31,7 @@ exports.createEvent = async (req, res) => {
   }
 };
 
-exports.getEvents = async (req, res) => {
+export const getEvents = async (req, res) => {
   try {
     const events = await Event.find().sort('date');
     res.json(events);
@@ -40,7 +40,7 @@ exports.getEvents = async (req, res) => {
   }
 };
 
-exports.getUpcomingEvents = async (req, res) => {
+export const getUpcomingEvents = async (req, res) => {
   try {
     const cacheKey = cacheService.keys.upcomingEvents();
     
@@ -61,7 +61,7 @@ exports.getUpcomingEvents = async (req, res) => {
   }
 };
 
-exports.updateEvent = async (req, res) => {
+export const updateEvent = async (req, res) => {
   try {
     const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
     
@@ -75,7 +75,7 @@ exports.updateEvent = async (req, res) => {
   }
 };
 
-exports.deleteEvent = async (req, res) => {
+export const deleteEvent = async (req, res) => {
   try {
     await Event.findByIdAndDelete(req.params.id);
     

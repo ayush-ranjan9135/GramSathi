@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const fundSchema = new mongoose.Schema({
   schemeName: { type: String, required: true },
@@ -19,4 +19,4 @@ const fundSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Fund', fundSchema);
+export default mongoose.model('Fund', fundSchema);

@@ -1,6 +1,6 @@
-const WelfareScheme = require('../models/WelfareScheme');
+import WelfareScheme from '../models/WelfareScheme.js';
 
-exports.createScheme = async (req, res) => {
+export const createScheme = async (req, res) => {
   try {
     const scheme = await WelfareScheme.create({
       ...req.body,
@@ -12,7 +12,7 @@ exports.createScheme = async (req, res) => {
   }
 };
 
-exports.getSchemes = async (req, res) => {
+export const getSchemes = async (req, res) => {
   try {
     const schemes = await WelfareScheme.find({ isActive: true }).sort('-createdAt');
     res.json(schemes);
@@ -21,7 +21,7 @@ exports.getSchemes = async (req, res) => {
   }
 };
 
-exports.getScheme = async (req, res) => {
+export const getScheme = async (req, res) => {
   try {
     const scheme = await WelfareScheme.findById(req.params.id);
     res.json(scheme);
@@ -30,7 +30,7 @@ exports.getScheme = async (req, res) => {
   }
 };
 
-exports.updateScheme = async (req, res) => {
+export const updateScheme = async (req, res) => {
   try {
     const scheme = await WelfareScheme.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(scheme);
@@ -39,7 +39,7 @@ exports.updateScheme = async (req, res) => {
   }
 };
 
-exports.deleteScheme = async (req, res) => {
+export const deleteScheme = async (req, res) => {
   try {
     await WelfareScheme.findByIdAndDelete(req.params.id);
     res.json({ message: 'Scheme deleted' });

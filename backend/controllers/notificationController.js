@@ -1,6 +1,6 @@
-const Notification = require('../models/Notification');
+import Notification from '../models/Notification.js';
 
-exports.getNotifications = async (req, res) => {
+export const getNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find({
       $or: [
@@ -15,7 +15,7 @@ exports.getNotifications = async (req, res) => {
   }
 };
 
-exports.markAsRead = async (req, res) => {
+export const markAsRead = async (req, res) => {
   try {
     await Notification.findByIdAndUpdate(req.params.id, {
       $addToSet: { isRead: req.user.id }
@@ -26,7 +26,7 @@ exports.markAsRead = async (req, res) => {
   }
 };
 
-exports.createAnnouncement = async (req, res) => {
+export const createAnnouncement = async (req, res) => {
   try {
     const notification = await Notification.create({
       ...req.body,
