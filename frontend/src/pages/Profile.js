@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { FaUser, FaPhone, FaEnvelope, FaMapMarkerAlt, FaEdit, FaSave, FaTimes, FaCamera } from 'react-icons/fa';
 
 const Profile = () => {
-  const { user, loadUser } = useContext(AuthContext);
+  const { loadUser } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({

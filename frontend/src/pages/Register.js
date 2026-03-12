@@ -7,7 +7,6 @@ import { FaUser, FaPhone, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaMapMarkerAlt,
 
 const Register = () => {
   const [step, setStep] = useState(1);
-  const [userId, setUserId] = useState('');
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', password: '', confirmPassword: '', role: 'villager', village: '', address: ''
   });

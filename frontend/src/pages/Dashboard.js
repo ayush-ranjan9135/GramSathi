@@ -1,16 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getComplaintStats, getComplaints, getProjectStats, getFundStats, getUpcomingEvents, updateComplaint } from '../services/api';
-import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { toast } from 'react-toastify';
-import { FaDownload, FaCheck, FaEye, FaBell, FaTimes, FaCalendar, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaDownload, FaCheck, FaEye, FaTimes, FaCalendar, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const [stats, setStats] = useState({});
   const [events, setEvents] = useState([]);
   const [recentComplaints, setRecentComplaints] = useState([]);
-  const [filterYear, setFilterYear] = useState(new Date().getFullYear());
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {

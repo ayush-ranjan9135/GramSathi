@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { getEvents, createEvent, deleteEvent } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
-import { FaCalendar, FaClock, FaMapMarkerAlt, FaTrash, FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaClock, FaMapMarkerAlt, FaTrash, FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
 
 const Events = () => {
   const { user } = useContext(AuthContext);
@@ -63,8 +63,6 @@ const Events = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
-
-  const isUpcoming = (date) => new Date(date) >= new Date();
 
   const getEventStatus = (date) => {
     const eventDate = new Date(date);
