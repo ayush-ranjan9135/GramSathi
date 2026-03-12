@@ -74,7 +74,11 @@ app.get('/api/test-email', async (req, res) => {
     if (result.success) {
       res.json({ message: `Test email sent successfully to ${testEmail}` });
     } else {
-      res.status(500).json({ message: 'Failed to send test email', error: result.error });
+      res.status(500).json({ 
+        message: 'Failed to send test email', 
+        error: result.error,
+        tip: 'Check Render logs for full SMTP debug output'
+      });
     }
   } catch (error) {
     res.status(500).json({ message: 'Server error during email test', error: error.message });

@@ -13,6 +13,8 @@ const sendEmailOTP = async (email, otp) => {
     }
 
     const port = parseInt(process.env.EMAIL_PORT) || 587;
+    console.log(`🔌 Initializing SMTP with ${process.env.EMAIL_HOST}:${port} (Secure: ${port === 465})`);
+    
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: port,
@@ -24,9 +26,11 @@ const sendEmailOTP = async (email, otp) => {
       tls: {
         rejectUnauthorized: false
       },
-      connectionTimeout: 10000, // 10 seconds
+      connectionTimeout: 10000, 
       greetingTimeout: 10000,
       socketTimeout: 15000,
+      logger: true, // Log to console
+      debug: true   // Include debug info
     });
 
     // Verify connection
