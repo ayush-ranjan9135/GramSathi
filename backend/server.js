@@ -43,6 +43,25 @@ app.use((req, res, next) => {
 });
 
 // Routes
+// Health check route for production diagnosis
+app.get('/api/health-check', (req, res) => {
+  const envStatus = {
+    EMAIL_USER: !!process.env.EMAIL_USER,
+    EMAIL_PASS: !!process.env.EMAIL_PASS,
+    EMAIL_HOST: !!process.env.EMAIL_HOST,
+    EMAIL_PORT: !!process.env.EMAIL_PORT,
+    REDIS_URL: !!process.env.UPSTASH_REDIS_REST_URL,
+    REDIS_TOKEN: !!process.env.UPSTASH_REDIS_REST_TOKEN,
+    MONGODB: !!process.env.MONGODB_URI,
+    CLIENT_URL: process.env.CLIENT_URL || 'Not Set'
+  };
+  res.json({
+    status: 'GramSathi API is running',
+    environmentVariables: envStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/complaints', require('./routes/complaintRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
