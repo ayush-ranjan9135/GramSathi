@@ -20,7 +20,16 @@ const ForgotPassword = () => {
       const { data } = await forgotPassword({ email });
       setUserId(data.userId);
       setStep(2);
-      toast.success('OTP sent to your email');
+      
+      if (data.devMode && data.otp) {
+        toast.info(`🔑 Your OTP: ${data.otp}`, { 
+          autoClose: 15000,
+          position: 'top-center',
+          style: { fontSize: '18px', fontWeight: 'bold' }
+        });
+      } else {
+        toast.success('OTP sent to your email');
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to send OTP');
     } finally {
