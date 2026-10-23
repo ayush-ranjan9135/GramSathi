@@ -16,6 +16,7 @@ import Events from './pages/Events';
 import Schemes from './pages/Schemes';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
+import Landing from './pages/Landing';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -62,7 +63,7 @@ const AppRoutes = () => {
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
         <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" /> : <ForgotPassword />} />
         
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
         <Route
           path="/dashboard"
           element={
